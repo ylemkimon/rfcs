@@ -4,10 +4,9 @@
 
 # Summary
 
-Preload `dependenciesMeta` for popular packages.
+Preload `dependenciesMeta.built` for popular packages.
 
 # Motivation
-### `built`
 Build scripts such as `postinstall` of popular packages can be used as an
 exploit, as seen in [`eslint-scope`](https://eslint.org/blog/2018/07/postmortem-for-malicious-package-publishes).
 There are also instances of packages being compromised, such as
@@ -15,11 +14,6 @@ There are also instances of packages being compromised, such as
 
 Due to the nature of NPM ecosystem, it's almost impossible to review the
 whole dependency tree.
-
-### `unplugged`
-Some packages are incompatible with PnP, e.g., [yarnpkg/berry#856](https://github.com/yarnpkg/berry/issues/856),
-[yarnpkg/berry#818#issuecomment-579190933](https://github.com/yarnpkg/berry/issues/818#issuecomment-579190933),
-and need to be unplugged.
 
 # Detailed design
 
@@ -39,9 +33,6 @@ export const preloadedDependenciesMeta = [
   }],
   [`@babel/*@^7`, {
     built: false,
-  }],
-  [`docusaurus@<=1`, {
-    unplugged: true,
   }],
 ]
 ```
@@ -72,8 +63,6 @@ certain requirements, possibly stricter than the
 1. Download the list every time `yarn install` runs, if a flag or config
 is set. I think this is a plausible solution, too. This mitigates drawbacks
 above but install time may increase.
-2. A field in `package.json` to indicate its PnP compatibility. This can't be
-used for `built`, as `package.json` can be modified if the package is compromised.
 
 # Unresolved questions
 
